@@ -14,6 +14,11 @@ public class GeekUnit {
 
         for (Method m : declaredMethods) {
             if (m.isAnnotationPresent(Test.class)) {
+                if (m.getAnnotation(Test.class).priority() < 1 || m.getAnnotation(Test.class).priority() > 10) {
+                    throw new RuntimeException(
+                            String.format("Priority must be not less than 1 or more than 10. In method %s got %d",
+                                    m.getName(), m.getAnnotation(Test.class).priority()));
+                }
                 methods.add(m);
             } else if (m.isAnnotationPresent(BeforeSuit.class)) {
                 if (beforeSuit == null) {
@@ -39,6 +44,10 @@ public class GeekUnit {
 
         if (afterSuit != null) {
             methods.add(afterSuit);
+        } else {
+            // По заданию не понятно - нужно ли это,
+            // там явно можно понять только что может отсутствовать аннотация BeforeSuit
+            throw new RuntimeException("No After Suit Annotation found");
         }
 
         for (Method m : methods) {
